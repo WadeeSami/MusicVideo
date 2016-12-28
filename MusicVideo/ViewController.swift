@@ -12,12 +12,16 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+        let apiManager = APIManger()
+        apiManager.loadData("https://itunes.apple.com/us/rss/topmovies/limit=10/genre=4401/json", completion: didLaodData)
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    
+    func didLaodData(result:String){
+        let Allert = UIAlertController(title: (result), message: nil, preferredStyle: .Alert)
+        let action = UIAlertAction(title: "OK", style: .Default, handler: nil)
+        Allert.addAction(action)
+        self.presentViewController(Allert, animated: true, completion: nil)
+        
     }
 
 
