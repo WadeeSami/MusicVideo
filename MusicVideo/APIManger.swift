@@ -20,19 +20,36 @@ class APIManger {
         let defaultSession = NSURLSession(configuration: config)
         let url:NSURL = NSURL(string: urlString)!
         
+        
         //create a task
         let task = defaultSession.dataTaskWithURL(url) {
             (data,response,error) -> Void in
-            dispatch_async(dispatch_get_main_queue()) {
-                if error != nil {
+            
+            if error != nil {
+                dispatch_async(dispatch_get_main_queue()){
                     completion(result :(error?.localizedDescription)!)
+                }
+            }else{
+                //there must be a data, go and try to parse
+                do{
+                   let jsonData = try NSJSONSerialization.JSONObjectWithData(data!, options: .AllowFragments)
                     
-                }else{
-                    completion(result:"Successfull")
-                    print (data)
+                    print (jsonData)
+                    
+                    let priority = DISPATCH_QUEUE_PRIORITY_HIGH
+                    dispatch_async(dispatch_get_global_queue(priority, 0)){
+                        dispatch_async(dispatch_get_main_queue()){
+                            completion(result: "JSON Parsed Successfully")
+                        }
+                    }
+                }catch {
+                    dispatch_async(dispatch_get_main_queue()){
+                        completion(result: "Failed to parse the JSON")
+                    }
+                    
                 }
             }
-        }
+                    }
         task.resume();
     }
 }
